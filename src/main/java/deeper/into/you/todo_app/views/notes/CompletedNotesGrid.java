@@ -22,7 +22,6 @@ public class CompletedNotesGrid extends TreeGrid<Note> {
         this.noteService = noteService;
         this.dataProvider = new TreeDataProvider<>(new TreeData<>());
         configureGrid();
-
     }
 
     private void configureGrid() {

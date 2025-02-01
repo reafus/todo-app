@@ -40,8 +40,13 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
     public NotesView(NoteService noteService) {
         this.noteService = noteService;
         this.completedGrid = new CompletedNotesGrid(noteService);
+        Details details = new Details();
+        details.add(this.completedGrid);
+        details.setWidth("100%");
+        details.getStyle().set("min-width", "100%");
+
         configureGrid();
-        add(createAddButton(), grid, completedGrid);
+        add(createAddButton(), grid, details);
         loadData();
         refreshGrid();
     }
