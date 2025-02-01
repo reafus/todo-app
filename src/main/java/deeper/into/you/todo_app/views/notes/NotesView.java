@@ -2,11 +2,9 @@ package deeper.into.you.todo_app.views.notes;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
@@ -27,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 @Route(value = "notes/:groupID", layout = MainLayout.class)
 @PageTitle("Заметки")
 public class NotesView extends VerticalLayout implements BeforeEnterObserver {
@@ -35,14 +32,18 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
     private final NoteService noteService;
     private Long groupId;
     private TreeGrid<Note> grid = new TreeGrid<>();
+    private CompletedNotesGrid completedGrid;
     private Map<Long, Boolean> detailStates = new HashMap<>();
+    private Map<Long, Boolean> expandedStates = new HashMap<>();
     private TreeDataProvider<Note> dataProvider;
 
     public NotesView(NoteService noteService) {
         this.noteService = noteService;
+        this.completedGrid = new CompletedNotesGrid(noteService);
         configureGrid();
-        add(createAddButton(), grid);
+        add(createAddButton(), grid, completedGrid);
         loadData();
+        refreshGrid();
     }
 
     private void configureGrid() {
@@ -57,6 +58,15 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
                         return "sub-note";
                     }
                 });
+        grid.addExpandListener(event -> {
+            Note note = event.getItems().iterator().next();
+            expandedStates.put(note.getId(), true);
+        });
+
+        grid.addCollapseListener(event -> {
+            Note note = event.getItems().iterator().next();
+            expandedStates.put(note.getId(), false);
+        });
 
         grid.addComponentColumn(note -> {
                     Checkbox checkbox = new Checkbox();
@@ -100,9 +110,26 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
         treeData.clear();
 
         List<Note> rootNotes = noteService.getRootNotesByGroup(groupId);
+
         treeData.addItems(rootNotes, note -> noteService.getSubNotes(note.getId()));
 
         dataProvider.refreshAll();
+
+        for (Note note : rootNotes) {
+            restoreExpandedState(note);
+        }
+    }
+
+    private void restoreExpandedState(Note note) {
+        Boolean isExpanded = expandedStates.get(note.getId());
+        if (isExpanded != null && isExpanded) {
+            grid.expand(note);
+        }
+
+        List<Note> subNotes = noteService.getSubNotes(note.getId());
+        for (Note subNote : subNotes) {
+            restoreExpandedState(subNote);
+        }
     }
 
     private Component createAddButton() {
@@ -197,8 +224,58 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
         List<Note> rootNotes = noteService.getRootNotesByGroup(groupId);
         treeData.addItems(rootNotes, note -> noteService.getSubNotes(note.getId()));
 
+        for (Note note : rootNotes) {
+            if (isNoteAndChildrenCompleted(note)) {
+                if (!completedGrid.getTreeData().contains(note)) {
+                    moveToCompleted(note);
+                }
+            } else {
+                restoreExpandedState(note);
+            }
+        }
         dataProvider.refreshAll();
     }
+
+    private boolean isNoteAndChildrenCompleted(Note note) {
+        if (!note.isCompleted()) {
+            return false;
+        }
+        List<Note> subNotes = noteService.getSubNotes(note.getId());
+        for (Note subNote : subNotes) {
+            if (!isNoteAndChildrenCompleted(subNote)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void moveToCompleted(Note note) {
+        if (!note.isCompleted()) {
+            return;
+        }
+        TreeData<Note> treeData = dataProvider.getTreeData();
+        removeNoteAndChildrenFromTreeData(note, treeData);
+        dataProvider.refreshAll();
+
+        completedGrid.addCompletedNote(note);
+    }
+    private void removeNoteAndChildrenFromTreeData(Note note, TreeData<Note> treeData) {
+        if (treeData.contains(note)) {
+            treeData.removeItem(note);
+        }
+        List<Note> subNotes = noteService.getSubNotes(note.getId());
+        for (Note subNote : subNotes) {
+            removeNoteAndChildrenFromTreeData(subNote, treeData);
+        }
+    }
+    public void moveToActive(Note note) {
+        TreeData<Note> treeData = dataProvider.getTreeData();
+        treeData.addItem(null, note);
+        List<Note> subNotes = noteService.getSubNotes(note.getId());
+        treeData.addItems(note, subNotes);
+        dataProvider.refreshAll();
+    }
+
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
@@ -206,5 +283,6 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
                 event.getRouteParameters().get("groupID").orElse("0")
         );
         loadData();
+        refreshGrid();
     }
 }
