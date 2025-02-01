@@ -1,0 +1,9 @@
+::part(parent-note) {
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+::part(sub-note) {
+    font-style: italic;
+    padding-left: 30px;
+}

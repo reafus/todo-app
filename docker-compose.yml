@@ -1,0 +1,23 @@
+services:
+  postgres:
+    container_name: postgres-sql-todo
+    image: postgres
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_DB: todo_app
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - 5432:5432
+    networks:
+      - todo-app
+    restart: unless-stopped
+networks:
+  todo-app:
+    driver: bridge
+
+volumes:
+  postgres:
+    driver: local
