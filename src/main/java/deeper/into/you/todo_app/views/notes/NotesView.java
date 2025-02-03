@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 @Route(value = "notes/:groupID", layout = MainLayout.class)
 @PageTitle("Заметки")
 public class NotesView extends VerticalLayout implements BeforeEnterObserver {
@@ -39,15 +40,15 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
 
     public NotesView(NoteService noteService) {
         this.noteService = noteService;
-        this.completedGrid = new CompletedNotesGrid(noteService);
+        this.completedGrid = new CompletedNotesGrid(noteService, groupId);
+        completedGrid.setRefreshCallback(this::refreshGrid);  // решение проблемы с обновлением гридов. После смены статуса
+
         Details details = new Details();
         details.add(this.completedGrid);
         details.setWidth("100%");
         details.getStyle().set("min-width", "100%");
-
         configureGrid();
         add(createAddButton(), grid, details);
-        loadData();
         refreshGrid();
     }
 
@@ -114,15 +115,13 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
         TreeData<Note> treeData = dataProvider.getTreeData();
         treeData.clear();
 
-        List<Note> rootNotes = noteService.getRootNotesByGroup(groupId);
+        List<Note> rootNotes = noteService.getActiveRootNotesByGroup(groupId);
 
         treeData.addItems(rootNotes, note -> noteService.getSubNotes(note.getId()));
 
-        dataProvider.refreshAll();
+        rootNotes.forEach(note -> restoreExpandedState(note));
 
-        for (Note note : rootNotes) {
-            restoreExpandedState(note);
-        }
+        dataProvider.refreshAll();
     }
 
     private void restoreExpandedState(Note note) {
@@ -223,71 +222,16 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
     }
 
     private void refreshGrid() {
-        TreeData<Note> treeData = dataProvider.getTreeData();
-        treeData.clear();
-
-        List<Note> rootNotes = noteService.getRootNotesByGroup(groupId);
-        treeData.addItems(rootNotes, note -> noteService.getSubNotes(note.getId()));
-
-        for (Note note : rootNotes) {
-            if (isNoteAndChildrenCompleted(note)) {
-                if (!completedGrid.getTreeData().contains(note)) {
-                    moveToCompleted(note);
-                }
-            } else {
-                restoreExpandedState(note);
-            }
-        }
-        dataProvider.refreshAll();
+        loadData();
+        completedGrid.refreshGrid(groupId);
     }
-
-    private boolean isNoteAndChildrenCompleted(Note note) {
-        if (!note.isCompleted()) {
-            return false;
-        }
-        List<Note> subNotes = noteService.getSubNotes(note.getId());
-        for (Note subNote : subNotes) {
-            if (!isNoteAndChildrenCompleted(subNote)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void moveToCompleted(Note note) {
-        if (!note.isCompleted()) {
-            return;
-        }
-        TreeData<Note> treeData = dataProvider.getTreeData();
-        removeNoteAndChildrenFromTreeData(note, treeData);
-        dataProvider.refreshAll();
-
-        completedGrid.addCompletedNote(note);
-    }
-    private void removeNoteAndChildrenFromTreeData(Note note, TreeData<Note> treeData) {
-        if (treeData.contains(note)) {
-            treeData.removeItem(note);
-        }
-        List<Note> subNotes = noteService.getSubNotes(note.getId());
-        for (Note subNote : subNotes) {
-            removeNoteAndChildrenFromTreeData(subNote, treeData);
-        }
-    }
-    public void moveToActive(Note note) {
-        TreeData<Note> treeData = dataProvider.getTreeData();
-        treeData.addItem(null, note);
-        List<Note> subNotes = noteService.getSubNotes(note.getId());
-        treeData.addItems(note, subNotes);
-        dataProvider.refreshAll();
-    }
-
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         groupId = Long.parseLong(
                 event.getRouteParameters().get("groupID").orElse("0")
         );
-        loadData();
         refreshGrid();
     }
+
 }

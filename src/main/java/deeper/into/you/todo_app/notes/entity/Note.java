@@ -80,7 +80,10 @@ public class Note extends BaseAuditingEntity {
     public void setSubNotes(List<Note> subNotes) {
         this.subNotes = subNotes;
     }
-
+    public void addSubNote(Note subNote) {
+        subNotes.add(subNote);
+        subNote.setParentNote(this);
+    }
     public String getTitle() {
         return title;
     }

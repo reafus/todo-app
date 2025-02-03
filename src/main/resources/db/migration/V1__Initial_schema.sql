@@ -20,3 +20,4 @@ CREATE TABLE note (
 CREATE INDEX idx_note_group_id ON note (group_id);
 CREATE INDEX idx_note_parent_note_id ON note (parent_note_id);
 CREATE INDEX idx_note_todo_date ON note (todo_date);
+CREATE INDEX idx_note_is_completed ON note (is_completed);

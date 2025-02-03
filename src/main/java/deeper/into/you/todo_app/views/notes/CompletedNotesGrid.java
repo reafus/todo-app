@@ -3,35 +3,46 @@ package deeper.into.you.todo_app.views.notes;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.provider.hierarchy.TreeData;
 import com.vaadin.flow.data.provider.hierarchy.TreeDataProvider;
-import deeper.into.you.todo_app.notes.entity.Note;
+import deeper.into.you.todo_app.notes.dto.NoteDTO;
 import deeper.into.you.todo_app.notes.services.NoteService;
 
 import java.util.List;
 
-public class CompletedNotesGrid extends TreeGrid<Note> {
+
+
+public class CompletedNotesGrid extends TreeGrid<NoteDTO> {
 
     private final NoteService noteService;
-    private final TreeDataProvider<Note> dataProvider;
+    private final TreeDataProvider<NoteDTO> dataProvider;
+    private Runnable refreshCallback;
 
-    public CompletedNotesGrid(NoteService noteService) {
+    public CompletedNotesGrid(NoteService noteService, Long groupId) {
         this.noteService = noteService;
         this.dataProvider = new TreeDataProvider<>(new TreeData<>());
-        configureGrid();
+        configureGrid(groupId);
     }
 
-    private void configureGrid() {
-        addHierarchyColumn(Note::getTitle)
+    private void configureGrid(Long groupId) {
+        addHierarchyColumn(NoteDTO::getTitle)
                 .setHeader("Завершенные")
                 .setWidth("300px")
                 .setFlexGrow(0);
 
-        addComponentColumn(this::createRestoreButton).setHeader("Вернуть").setWidth("100px");
+
+        addComponentColumn(note -> new Button("Восстановить", e -> {
+            noteService.updateNoteAndChildrenCompletionStatus(note.getId(), false);
+            refreshGrid(groupId);
+            if (refreshCallback != null) {
+                refreshCallback.run();
+            }
+        })).setWidth("150px");
+
         addComponentColumn(this::createDeleteButton).setHeader("Удалить").setWidth("100px");
+
 
         setHeight("300px");
         setWidthFull();
@@ -39,18 +50,8 @@ public class CompletedNotesGrid extends TreeGrid<Note> {
         setDataProvider(dataProvider);
     }
 
-    private Component createRestoreButton(Note note) {
-        if (note.getParentNote() != null) {
-            return new Span();
-        }
-        Button restoreButton = new Button("Вернуть", e -> {
-            moveToActive(note);
-        });
-        restoreButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        return restoreButton;
-    }
 
-    private Component createDeleteButton(Note note) {
+    private Component createDeleteButton(NoteDTO note) {
         Button deleteButton = new Button("Удалить", e -> {
             deleteNote(note);
         });
@@ -58,33 +59,10 @@ public class CompletedNotesGrid extends TreeGrid<Note> {
         return deleteButton;
     }
 
-    private void moveToActive(Note note) {
-        note.setCompleted(false);
-        noteService.save(note);
-        TreeData<Note> treeData = dataProvider.getTreeData();
-        removeNoteAndChildrenFromTreeData(note, treeData);
-        dataProvider.refreshAll();
-
-        if (getUI().isPresent()) {
-            getUI().get().access(() -> {
-                NotesView notesView = (NotesView) getUI().get().getCurrentView();
-                notesView.moveToActive(note);
-            });
-        }
-    }
-    private void removeNoteAndChildrenFromTreeData(Note note, TreeData<Note> treeData) {
-        if (treeData.contains(note)) {
-            treeData.removeItem(note);
-        }
-        List<Note> subNotes = noteService.getSubNotes(note.getId());
-        for (Note subNote : subNotes) {
-            removeNoteAndChildrenFromTreeData(subNote, treeData);
-        }
-    }
-    private void deleteNote(Note note) {
+    private void deleteNote(NoteDTO note) {
         try {
             noteService.delete(note.getId());
-            TreeData<Note> treeData = dataProvider.getTreeData();
+            TreeData<NoteDTO> treeData = dataProvider.getTreeData();
             treeData.removeItem(note);
             dataProvider.refreshAll();
         } catch (Exception ex) {
@@ -92,23 +70,22 @@ public class CompletedNotesGrid extends TreeGrid<Note> {
         }
     }
 
-    public void addCompletedNote(Note note) {
-        TreeData<Note> treeData = dataProvider.getTreeData();
-        if (!treeData.contains(note)) {
+    public void refreshGrid(Long groupId) {
+        TreeData<NoteDTO> treeData = dataProvider.getTreeData();
+        treeData.clear();
+
+        List<NoteDTO> completedNotes = noteService.getCompletedRootNotesByGroupAsDTO(groupId);
+
+        completedNotes.forEach(note -> {
             treeData.addItem(null, note);
-        }
-        List<Note> subNotes = noteService.getSubNotes(note.getId());
-        for (Note subNote : subNotes) {
-            if (!treeData.contains(subNote)) {
-                treeData.addItem(note, subNote);
-            }
-        }
+            note.getSubNotes().forEach(subNote -> treeData.addItem(note, subNote));
+        });
+
         dataProvider.refreshAll();
     }
 
-    public void clear() {
-        TreeData<Note> treeData = dataProvider.getTreeData();
-        treeData.clear();
-        dataProvider.refreshAll();
+    public void setRefreshCallback(Runnable refreshCallback) {
+        this.refreshCallback = refreshCallback;
     }
+
 }

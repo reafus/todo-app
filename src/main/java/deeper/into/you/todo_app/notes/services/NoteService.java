@@ -1,5 +1,6 @@
 package deeper.into.you.todo_app.notes.services;
 
+import deeper.into.you.todo_app.notes.dto.NoteDTO;
 import deeper.into.you.todo_app.notes.entity.Note;
 import deeper.into.you.todo_app.notes.entity.NotesGroup;
 import deeper.into.you.todo_app.notes.repositories.NoteRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -64,4 +66,43 @@ public class NoteService {
                 .orElseThrow(() -> new EntityNotFoundException("Group not found"));
     }
 
+    public List<Note> getActiveRootNotesByGroup(Long groupId) {
+        return noteRepository.findByGroupIdAndParentNoteIsNullAndIsCompletedFalse(groupId);
+    }
+
+    public List<Note> getCompletedRootNotesByGroup(Long groupId) {
+        return noteRepository.findCompletedRootNotesByGroup(groupId);
+    }
+
+    @Transactional
+    public void updateNoteAndChildrenCompletionStatus(Long noteId, boolean isCompleted) {
+        Note note = findById(noteId);
+        note.setCompleted(isCompleted);
+        updateChildrenCompletionStatus(note, isCompleted);
+        noteRepository.save(note);
+    }
+
+    private void updateChildrenCompletionStatus(Note parent, boolean isCompleted) {
+        for (Note child : parent.getSubNotes()) {
+            child.setCompleted(isCompleted);
+            noteRepository.save(child);
+            updateChildrenCompletionStatus(child, isCompleted);
+        }
+    }
+    public List<NoteDTO> getCompletedRootNotesByGroupAsDTO(Long groupId) {
+        List<Note> completedNotes = noteRepository.findCompletedRootNotesByGroup(groupId);
+        return completedNotes.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private NoteDTO convertToDTO(Note note) {
+        NoteDTO dto = new NoteDTO();
+        dto.setId(note.getId());
+        dto.setTitle(note.getTitle());
+        dto.setSubNotes(note.getSubNotes().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList()));
+        return dto;
+    }
 }
