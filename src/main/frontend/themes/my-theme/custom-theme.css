@@ -1,0 +1,222 @@
+html[theme~="custom"] {
+    /* Discord-like цветовая палитра */
+    --discord-primary: #36393f;       /* Основной фон */
+    --discord-secondary: #2f3136;     /* Вторичный фон */
+    --discord-tertiary: #202225;      /* Акцентные элементы */
+    --discord-accent: #343862;        /* Брендовый синий */
+    --discord-text-primary: #dcddde;  /* Основной текст */
+    --discord-text-secondary: #b9bbbe;/* Вторичный текст */
+    --discord-border: #40444b;        /* Цвет границ */
+
+    /* Переопределение Lumo переменных */
+    --lumo-primary-color: var(--discord-accent);
+    --lumo-primary-text-color: var(--discord-text-primary);
+    --lumo-body-text-color: var(--discord-text-secondary);
+    --lumo-base-color: var(--discord-secondary);
+    --lumo-tint-5pct: rgba(88, 101, 242, 0.05);
+}
+
+/* Общие стили для фона */
+html[theme~="custom"] {
+    background-color: var(--discord-primary);
+}
+
+/* Стили для кнопок (Discord-стиль) */
+html[theme~="custom"] vaadin-button {
+    background-color: var(--discord-accent);
+    opacity: 0.7;
+    color: white;
+    border-radius: 3px;
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+html[theme~="custom"] vaadin-button:hover {
+    background-color: #383c6b;
+    transform: translateY(-1px);
+}
+
+html[theme~="custom"] vaadin-button:active {
+    background-color: var(--discord-accent);
+    transform: translateY(0);
+}
+/*Стиль для чекбокса*/
+html[theme~="custom"] vaadin-checkbox::part(checkbox) {
+    background-color: #2c2f33;
+    border: 2px solid #7289da;
+    border-radius: 4px;
+}
+html[theme~="custom"] vaadin-checkbox:hover::part(checkbox) {
+    background-color: #4752c4;
+    transform: translateY(-1px);
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+html[theme~="custom"] vaadin-checkbox:active::part(checkbox) {
+    background-color: #4752c4;
+    transform: translateY(0);
+}
+html[theme~="custom"] vaadin-checkbox[checked]::part(checkbox)::after {
+    background-color: var(--discord-accent);
+}
+html[theme~="custom"] vaadin-checkbox > label {
+    color: #ffffff;
+    margin-left: 8px;
+}
+
+/* Стили для кнопки-стрелки раскрывающегося списка */
+html[theme~="custom"] vaadin-grid-tree-toggle::part(toggle),
+html[theme~="custom"] vaadin-details-summary::part(toggle) {
+    color: #a69f9f; /* Цвет стрелки */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+html[theme~="custom"] vaadin-grid-tree-toggle::part(toggle):hover,
+html[theme~="custom"] vaadin-details-summary::part(toggle):hover {
+    transform: scale(1.1); /* Увеличение кнопки при наведении */
+}
+
+html[theme~="custom"] vaadin-grid-tree-toggle::part(toggle):active,
+html[theme~="custom"] vaadin-details-summary::part(toggle):active {
+    transform: scale(0.95); /* Лёгкое уменьшение при нажатии */
+}
+
+/* Текстовые поля как в Discord */
+html[theme~="custom"] vaadin-text-field {
+    background-color: var(--discord-tertiary);
+    border-radius: 3px;
+    border: 1px solid var(--discord-border);
+}
+
+html[theme~="custom"] vaadin-text-field::part(input) {
+    color: var(--discord-text-primary);
+    padding: 10px;
+    font-size: 14px;
+}
+
+html[theme~="custom"] vaadin-text-field::part(label) {
+    color: var(--discord-text-secondary);
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* Стили для выпадающих списков */
+html[theme~="custom"] vaadin-combo-box {
+    background-color: var(--discord-tertiary);
+    border: 1px solid var(--discord-border);
+    border-radius: 3px;
+}
+
+/* Стили для таблиц */
+html[theme~="custom"] vaadin-grid {
+    background-color: var(--discord-secondary);
+    border: 1px solid var(--discord-border);
+}
+
+html[theme~="custom"] vaadin-grid::part(cell) {
+    border-bottom: 1px solid var(--discord-border);
+    color: var(--discord-text-primary);
+}
+
+/* Стили для карточек/компонентов */
+html[theme~="custom"] .my-component {
+    background-color: var(--discord-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--discord-border);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для бокового меню (как в Discord) */
+html[theme~="custom"] vaadin-app-layout[part="drawer"] {
+    background-color: var(--discord-secondary);
+    border-right: 1px solid var(--discord-border);
+}
+
+/* Анимации при наведении (как в Discord) */
+html[theme~="custom"] vaadin-item:hover {
+    background-color: var(--lumo-tint-5pct);
+    border-radius: 3px;
+}
+
+/* Стили для иконок */
+html[theme~="custom"] vaadin-icon {
+    color: var(--discord-text-secondary);
+    transition: color 0.2s ease;
+}
+
+html[theme~="custom"] vaadin-icon:hover {
+    color: var(--discord-text-primary);
+}
+
+html[theme~="custom"] .note-dialog {
+    background-color: var(--discord-secondary);
+    border: 1px solid var(--discord-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+html[theme~="custom"] .note-dialog::part(header) {
+    background-color: var(--discord-tertiary);
+    border-bottom: 1px solid var(--discord-border);
+    padding: 10px;
+}
+
+html[theme~="custom"] .note-dialog::part(content) {
+    padding: 16px;
+    background-color: var(--discord-secondary);
+}
+
+html[theme~="custom"] .note-dialog vaadin-text-field,
+html[theme~="custom"] .note-dialog vaadin-date-picker,
+html[theme~="custom"] .note-dialog vaadin-combo-box {
+    background-color: var(--discord-tertiary);
+    border: 1px solid var(--discord-border);
+    border-radius: 4px;
+    color: var(--discord-text-primary);
+}
+
+html[theme~="custom"] .note-dialog vaadin-text-field::part(input),
+html[theme~="custom"] .note-dialog vaadin-date-picker::part(input),
+html[theme~="custom"] .note-dialog vaadin-combo-box::part(input) {
+    color: var(--discord-text-primary);
+}
+
+html[theme~="custom"] .note-dialog vaadin-date-picker::part(label),
+html[theme~="custom"] .note-dialog vaadin-combo-box::part(label) {
+    color: var(--discord-text-primary);
+}
+
+html[theme~="custom"] .note-dialog vaadin-button {
+    background-color: var(--discord-accent);
+    color: white;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+html[theme~="custom"] .note-dialog vaadin-button:hover {
+    background-color: #4752c4;
+}
+
+html[theme~="custom"] .note-dialog .editor-container {
+    background-color: var(--discord-tertiary);
+    border: 1px solid var(--discord-border);
+    border-radius: 4px;
+}
+
+html[theme~="custom"] .note-dialog .quill-editor {
+    background-color: transparent;
+    color: var(--discord-text-primary);
+}
+
+html[theme~="custom"] .view-title {
+    color: var(--discord-text-primary);
+    margin: 0;
+    padding: 0;
+    letter-spacing: 1px;
+}
+

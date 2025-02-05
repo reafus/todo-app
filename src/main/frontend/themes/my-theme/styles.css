@@ -1,3 +1,6 @@
+@import "custom-theme.css";
+@import "fullcalendar.css";
+
 ::part(parent-note) {
     font-weight: bold;
     padding-left: 10px;
@@ -8,7 +11,7 @@
 }
 
 ::part(sub-note) {
-    font-style: italic;
+    font-style: normal;
     padding-left: 30px;
     white-space: normal;
     word-wrap: break-word;
@@ -36,4 +39,12 @@
     white-space: normal;
     overflow: visible;
 }
+
+html {
+    --lumo-primary-color: #1565c0;
+    --lumo-success-color: #2e7d32;
+
+    --lumo-primary-color-50pct: rgba(21, 101, 192, 0.5);
+}
+
 

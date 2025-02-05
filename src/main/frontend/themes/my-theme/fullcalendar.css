@@ -1,0 +1,81 @@
+.fc-event {
+    cursor: pointer;
+    background-color: var(--lumo-primary-color);
+    border: 1px solid var(--lumo-primary-contrast-color);
+    color: var(--lumo-primary-contrast-color);
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin: 2px;
+}
+
+.fc-event:hover {
+    opacity: 0.9;
+}
+
+.fc-toolbar-title {
+    font-size: 1.5em;
+    color: var(--lumo-header-text-color);
+}
+
+vaadin-app-layout::part(content) {
+    overflow: auto !important;
+}
+
+.full-calendar {
+    min-width: 800px;
+    min-height: 600px;
+}
+
+/* Стили для заголовка месяца и навигации */
+html[theme~="custom"] .fc-toolbar-title {
+    font-size: 1.5em; /* Размер шрифта заголовка */
+    color: #ffffff; /* Белый цвет текста для заголовка */
+}
+html[theme~="custom"] .fc-daygrid-day-number {
+    color: #ffffff;
+}
+html[theme~="custom"] .fc-col-header-cell-cushion {
+    color: #ffffff;
+}
+
+/* Стили для ячеек с датами */
+html[theme~="custom"] .fc-day {
+    color: #ffffff; /* Белый цвет текста для дней */
+}
+
+/* Стили для текущей даты */
+html[theme~="custom"] .fc-day.fc-day-today {
+    background-color: rgba(255, 255, 255, 0.2); /* Полупрозрачный фон для текущей даты */
+    color: #ffffff;
+}
+
+/* Стили для событий */
+html[theme~="custom"] .fc-event {
+    cursor: pointer;
+    background-color: var(--lumo-primary-color); /* Цвет фона события */
+    border: 1px solid var(--lumo-primary-contrast-color); /* Цвет границы события */
+    color: var(--lumo-primary-contrast-color); /* Цвет текста события */
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin: 2px;
+}
+
+/* Стили при наведении на событие */
+html[theme~="custom"] .fc-event:hover {
+    opacity: 0.9; /* Прозрачность при наведении */
+}
+
+/* Стили для ячеек с событиями в день */
+html[theme~="custom"] .fc-day-event {
+    color: #ffffff; /* Белый цвет текста для событий в ячейках дней */
+}
+
+/* Стили для кнопок навигации (предыдущий/следующий месяц) */
+html[theme~="custom"] .fc-button {
+    background-color: transparent; /* Прозрачный фон кнопок */
+    color: #ffffff; /* Белый цвет текста кнопок */
+}
+
+html[theme~="custom"] .fc-button:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Полупрозрачный фон при наведении на кнопки */
+}

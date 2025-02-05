@@ -25,9 +25,11 @@ public class NoteDialog extends Dialog {
     private NoteDialog(Note note,
                        Long groupId,
                        NoteService service,
-                       Consumer<Note> saveHandler) { // Используем Consumer<Note> вместо Runnable
+                       Consumer<Note> saveHandler) {
+        addClassName("note-dialog");
         TextField titleField = new TextField("Заголовок");
         titleField.setWidth("80%");
+        titleField.addClassName("note-title-field");
 
         QuillEditor contentField = new QuillEditor();
         contentField.getComponent();
@@ -40,11 +42,14 @@ public class NoteDialog extends Dialog {
         editorContainer.getStyle().set("border-radius", "5px");
         editorContainer.getStyle().set("overflow", "hidden");
         editorContainer.getStyle().set("box-sizing", "border-box");
+        editorContainer.addClassName("editor-container");
 
         ComboBox<Note> parentCombo = new ComboBox<>("Указать родительскую заметку");
         parentCombo.setWidth("80%");
+        parentCombo.addClassName("note-parent-combo");
         DatePicker todoDateField = new DatePicker("Срок выполнения");
         todoDateField.setWidth("80%");
+        todoDateField.addClassName("note-todo-date");
 
 
         titleField.setValue(note.getTitle() != null ? note.getTitle() : "");

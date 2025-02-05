@@ -21,11 +21,11 @@ import deeper.into.you.todo_app.views.notes.MainView;
 
 
 public class MainLayout extends AppLayout {
-    //todo добавить темно серую третью тему
 
     private H2 viewTitle;
     private Button themeToggle;
-    private boolean isDarkTheme = false;
+    private enum Theme { LIGHT, DARK, CUSTOM }
+    private Theme currentTheme = Theme.LIGHT;
 
     public MainLayout() {
         setPrimarySection(Section.DRAWER);
@@ -44,6 +44,7 @@ public class MainLayout extends AppLayout {
                     "setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 300)");
         });
         viewTitle = new H2();
+        viewTitle.addClassName("view-title");
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE, LumoUtility.Flex.GROW);
 
         themeToggle = new Button(VaadinIcon.ADJUST.create());
@@ -64,25 +65,36 @@ public class MainLayout extends AppLayout {
     }
 
     private void toggleTheme() {
-        isDarkTheme = !isDarkTheme;
-        applyDarkTheme(isDarkTheme);
-
+        currentTheme = switch(currentTheme) {
+            case LIGHT -> Theme.DARK;
+            case DARK -> Theme.CUSTOM;
+            case CUSTOM -> Theme.LIGHT;
+        };
+        applyTheme(currentTheme);
 
         UI.getCurrent().getPage().executeJs(
                 "localStorage.setItem('vaadinTheme', $0)",
-                isDarkTheme ? "dark" : "light"
+                currentTheme.name().toLowerCase()
         );
     }
 
-    private void applyDarkTheme(boolean dark) {
-        if(dark) {
-            UI.getCurrent().getElement().setAttribute("theme", "dark");
-            themeToggle.setIcon(VaadinIcon.MOON.create());
-            themeToggle.setTooltipText("Светлая тема");
-        } else {
-            UI.getCurrent().getElement().setAttribute("theme", "light");
-            themeToggle.setIcon(VaadinIcon.SUN_O.create());
-            themeToggle.setTooltipText("Темная тема");
+    private void applyTheme(Theme theme) {
+        UI ui = UI.getCurrent();
+        ui.getPage().executeJs("document.documentElement.setAttribute('theme', $0)", theme.name().toLowerCase());
+
+        switch(theme) {
+            case DARK -> {
+                themeToggle.setIcon(VaadinIcon.MOON.create());
+                themeToggle.setTooltipText("Светлая тема");
+            }
+            case CUSTOM -> {
+                themeToggle.setIcon(VaadinIcon.PAINTBRUSH.create());
+                themeToggle.setTooltipText("Тёмно-серая тема");
+            }
+            default -> {
+                themeToggle.setIcon(VaadinIcon.SUN_O.create());
+                themeToggle.setTooltipText("Тёмная тема");
+            }
         }
     }
 
@@ -120,8 +132,14 @@ public class MainLayout extends AppLayout {
         UI.getCurrent().getPage().executeJs(
                 "return localStorage.getItem('vaadinTheme')"
         ).then(value -> {
-            if("dark".equals(value.asString())) {
-                applyDarkTheme(true);
+            String storedTheme = value.asString();
+            if(storedTheme != null) {
+                currentTheme = Theme.valueOf(storedTheme.toUpperCase());
+                UI.getCurrent().getPage().executeJs(
+                        "document.documentElement.setAttribute('theme', $0)",
+                        storedTheme
+                );
+                applyTheme(currentTheme);
             }
         });
     }
