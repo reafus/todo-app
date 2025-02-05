@@ -10,6 +10,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.treegrid.TreeGrid;
@@ -24,7 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 @Route(value = "notes/:groupID", layout = MainLayout.class)
 @PageTitle("Заметки")
@@ -48,15 +48,22 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
         details.setWidth("100%");
         details.getStyle().set("min-width", "100%");
         configureGrid();
-        add(createAddButton(), grid, details);
+
+        FlexLayout wrapper = new FlexLayout(createAddButton(), grid, details);
+        wrapper.setFlexDirection(FlexLayout.FlexDirection.COLUMN);
+        wrapper.setSizeFull();
+        add(wrapper);
         refreshGrid();
+
     }
 
     private void configureGrid() {
         grid.addHierarchyColumn(Note::getTitle)
                 .setHeader("Заголовок")
-                .setWidth("300px")
-                .setFlexGrow(0)
+                .setAutoWidth(true)
+                .setFlexGrow(1)
+                .setKey("title")
+                .setClassNameGenerator(note -> "truncate-text")
                 .setPartNameGenerator(note -> {
                     if (note.getParentNote() == null) {
                         return "parent-note";
@@ -64,6 +71,9 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
                         return "sub-note";
                     }
                 });
+
+        grid.getColumnByKey("title")
+                        .setTooltipGenerator(Note::getTitle);
         grid.addExpandListener(event -> {
             Note note = event.getItems().iterator().next();
             expandedStates.put(note.getId(), true);
@@ -102,7 +112,7 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
                 .setAutoWidth(true)
                 .setFlexGrow(1);
 
-        grid.setHeight("600px");
+        grid.setMinHeight("600px");
         grid.setColumnReorderingAllowed(true);
         grid.setWidthFull();
 
@@ -162,9 +172,6 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
         delete.getElement().setAttribute("aria-label", "Удалить");
 
         Details details = new Details();
-        Icon infoIcon = new Icon(VaadinIcon.ELLIPSIS_DOTS_V);
-        details.setSummary(infoIcon);
-
 
         String content = note.getContent();
         if (content == null || content.trim().isEmpty()) {
@@ -187,10 +194,8 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
 
         details.addContent(container);
 
-
         Boolean isOpen = detailStates.get(note.getId());
         details.setOpened(isOpen != null && isOpen);
-
 
         details.addOpenedChangeListener(event -> {
             detailStates.put(note.getId(), event.isOpened());

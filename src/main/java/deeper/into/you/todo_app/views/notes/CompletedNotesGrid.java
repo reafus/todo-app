@@ -30,7 +30,7 @@ public class CompletedNotesGrid extends TreeGrid<NoteDTO> {
         addHierarchyColumn(NoteDTO::getTitle)
                 .setHeader("Завершенные")
                 .setWidth("300px")
-                .setFlexGrow(0);
+                .setFlexGrow(1);
 
 
         addComponentColumn(note -> new Button("Восстановить", e -> {
@@ -39,12 +39,13 @@ public class CompletedNotesGrid extends TreeGrid<NoteDTO> {
             if (refreshCallback != null) {
                 refreshCallback.run();
             }
-        })).setWidth("150px");
+        })).setWidth("min-content");
 
         addComponentColumn(this::createDeleteButton).setHeader("Удалить").setWidth("100px");
 
 
         setHeight("300px");
+        setMaxHeight("40vh");
         setWidthFull();
 
         setDataProvider(dataProvider);

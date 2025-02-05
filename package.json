@@ -3,6 +3,8 @@
   "license": "UNLICENSED",
   "type": "module",
   "dependencies": {
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/daygrid": "^6.1.15",
     "@polymer/polymer": "3.5.2",
     "@vaadin/bundles": "24.6.2",
     "@vaadin/common-frontend": "0.0.19",
@@ -81,7 +83,7 @@
       "workbox-core": "7.3.0",
       "workbox-precaching": "7.3.0"
     },
-    "hash": "8e03b293b155ac154b471c2320d3c9199d2d6f714548763d1d880cc2ff5dd755"
+    "hash": "a3b6e23d417b666d4d03364df6d8188e2b79ad53e1ce91cfee68a35375911450"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -99,6 +101,8 @@
     "date-fns": "$date-fns",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "@vaadin/vaadin-lumo-styles": "$@vaadin/vaadin-lumo-styles",
-    "@vaadin/vaadin-material-styles": "$@vaadin/vaadin-material-styles"
+    "@vaadin/vaadin-material-styles": "$@vaadin/vaadin-material-styles",
+    "@fullcalendar/core": "$@fullcalendar/core",
+    "@fullcalendar/daygrid": "$@fullcalendar/daygrid"
   }
 }

@@ -96,6 +96,10 @@ public class NoteService {
                 .collect(Collectors.toList());
     }
 
+    public List<Note> findAllWithTodoDate() {
+        return noteRepository.findByTodoDateIsNotNull();
+    }
+
     private NoteDTO convertToDTO(Note note) {
         NoteDTO dto = new NoteDTO();
         dto.setId(note.getId());

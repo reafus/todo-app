@@ -1,9 +1,39 @@
 ::part(parent-note) {
     font-weight: bold;
     padding-left: 10px;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    color: var(--lumo-body-text-color);
 }
 
 ::part(sub-note) {
     font-style: italic;
     padding-left: 30px;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    color: var(--lumo-body-text-color);
 }
+
+.truncated-title {
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--lumo-body-text-color);
+}
+
+.truncate-text {
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.truncate-text.expanded {
+    white-space: normal;
+    overflow: visible;
+}
+

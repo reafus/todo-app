@@ -1,0 +1,12 @@
+/* Светлая тема */
+:host([theme~="light"]) {
+    --lumo-primary-color: #0066cc;
+    --lumo-body-text-color: #000000;
+}
+
+/* Темная тема */
+:host([theme~="dark"]) {
+    --lumo-primary-color: #6b4848;
+    --lumo-body-text-color: rgba(255, 255, 255, 0.9);
+    --lumo-header-text-color: rgba(255, 255, 255, 1);
+}

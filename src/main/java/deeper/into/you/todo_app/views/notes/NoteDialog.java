@@ -1,12 +1,16 @@
 package deeper.into.you.todo_app.views.notes;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import deeper.into.you.todo_app.notes.entity.Note;
@@ -91,10 +95,14 @@ public class NoteDialog extends Dialog {
         layout.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
         layout.setPadding(true);
         layout.setSpacing(true);
-        layout.add(titleField, todoDateField, editorContainer, parentCombo, saveButton);
+        layout.add(addCloseButton(), titleField, todoDateField, editorContainer, parentCombo, saveButton);
 
-        setWidth("1200px");
-        add(layout);
+        setWidthFull();
+        FlexLayout wrapper = new FlexLayout(layout);
+        wrapper.setFlexDirection(FlexLayout.FlexDirection.COLUMN);
+        wrapper.setSizeFull();
+
+        add(wrapper);
     }
 
 
@@ -112,5 +120,18 @@ public class NoteDialog extends Dialog {
                 note.getGroup() != null ? note.getGroup().getId() : null,
                 service,
                 saveHandler);
+    }
+
+    public HorizontalLayout addCloseButton() {
+        Button closeButton = new Button(VaadinIcon.CLOSE.create());
+        closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        closeButton.addClickListener(e -> close());
+        closeButton.getStyle().set("margin-left", "auto");
+
+        HorizontalLayout headerLayout = new HorizontalLayout();
+        headerLayout.setWidthFull();
+        headerLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+        headerLayout.add(closeButton);
+        return headerLayout;
     }
 }

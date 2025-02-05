@@ -16,11 +16,14 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 
     List<Note> findByParentNoteId(Long parentNoteId);
 
-    @EntityGraph(attributePaths = "subNotes")
+    @EntityGraph(attributePaths = {"group"})
+    List<Note> findByTodoDateIsNotNull();
+
+    @EntityGraph(attributePaths = {"subNotes"})
     @Query("SELECT n FROM Note n WHERE n.group.id = :groupId AND n.parentNote IS NULL AND n.isCompleted = false")
     List<Note> findByGroupIdAndParentNoteIsNullAndIsCompletedFalse(@Param("groupId") Long groupId);
 
-    @EntityGraph(attributePaths = "subNotes")
+    @EntityGraph(attributePaths = {"subNotes"})
     @Query("SELECT n FROM Note n WHERE n.isCompleted = true AND n.group.id = :groupId AND n.parentNote IS NULL")
     List<Note> findCompletedRootNotesByGroup(@Param("groupId") Long groupId);
 
