@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Entity
 @Table(name = "note")
 public class Note extends BaseAuditingEntity {
@@ -46,7 +47,7 @@ public class Note extends BaseAuditingEntity {
     }
 
     public void setContent(String content) {
-        this.content = Jsoup.clean(content, Safelist.basic()); //очистка от опасных тегов (в quill нет защиты от xss)
+        this.content = Jsoup.clean(content, Safelist.basicWithImages()); //очистка от опасных тегов (в quill нет защиты от xss)
     }
 
     public NotesGroup getGroup() {

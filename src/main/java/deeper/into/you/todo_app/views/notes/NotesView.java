@@ -106,7 +106,8 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
                     if (note2.getTodoDate() == null) return 1;
                     return note1.getTodoDate().compareTo(note2.getTodoDate());
                 })
-                .setAutoWidth(true);
+                .setAutoWidth(true)
+                .addClassName("date-column");
 
         grid.addComponentColumn(this::createNoteActions)
                 .setAutoWidth(true)

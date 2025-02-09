@@ -19,6 +19,10 @@
     color: var(--lumo-body-text-color);
 }
 
+.date-column {
+    text-align: center;
+}
+
 .truncated-title {
     white-space: normal;
     word-wrap: break-word;
