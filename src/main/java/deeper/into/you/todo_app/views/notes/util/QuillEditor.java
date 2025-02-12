@@ -11,7 +11,6 @@ import java.util.concurrent.CompletableFuture;
 
 @Tag("quill-editor")
 public class QuillEditor extends Component {
-    //todo реализовать сохранение изображений. возможно монгодб
 
     public QuillEditor() {
         getElement().executeJs("""
@@ -19,11 +18,9 @@ public class QuillEditor extends Component {
                 theme: 'snow',
                 modules: {
                     toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'],
-                        ['blockquote', 'code-block'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered'}],
                         ['link'],
-                        ['image'],
                         ['clean']
                     ]
                 }
