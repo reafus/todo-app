@@ -10,22 +10,27 @@ import java.util.List;
 
 public interface NoteRepository extends JpaRepository<Note, Long> {
     @EntityGraph(attributePaths = {"group", "parentNote"})
-    List<Note> findAll();
+    List<Note> findAllByUserSub(String userSub);
 
-    List<Note> findByGroupIdAndParentNoteIsNull(Long groupId);
+    @Query("SELECT n FROM Note n WHERE n.group.id = :groupId AND n.parentNote IS NULL AND n.userSub = :userSub")
+    List<Note> findByGroupIdAndParentNoteIsNullAndUserSub(@Param("groupId") Long groupId,
+                                                          @Param("userSub") String userSub);
 
-    List<Note> findByParentNoteId(Long parentNoteId);
+    @Query("SELECT n FROM Note n WHERE n.parentNote.id = :parentNoteId AND n.userSub = :userSub")
+    List<Note> findByParentNoteIdAndUserSub(@Param("parentNoteId") Long parentNoteId,
+                                            @Param("userSub") String userSub);
 
     @EntityGraph(attributePaths = {"group"})
-    List<Note> findByTodoDateIsNotNull();
+    @Query("SELECT n FROM Note n WHERE n.todoDate IS NOT NULL AND n.userSub = :userSub")
+    List<Note> findByTodoDateIsNotNullAndUserSub(@Param("userSub") String userSub);
 
     @EntityGraph(attributePaths = {"subNotes"})
-    @Query("SELECT n FROM Note n WHERE n.group.id = :groupId AND n.parentNote IS NULL AND n.isCompleted = false")
-    List<Note> findByGroupIdAndParentNoteIsNullAndIsCompletedFalse(@Param("groupId") Long groupId);
+    @Query("SELECT n FROM Note n WHERE n.group.id = :groupId AND n.parentNote IS NULL AND n.isCompleted = false AND n.userSub = :userSub")
+    List<Note> findByGroupIdAndParentNoteIsNullAndIsCompletedFalseAndUserSub(@Param("groupId") Long groupId, @Param("userSub") String userSub);
 
     @EntityGraph(attributePaths = {"subNotes"})
-    @Query("SELECT n FROM Note n WHERE n.isCompleted = true AND n.group.id = :groupId AND n.parentNote IS NULL")
-    List<Note> findCompletedRootNotesByGroup(@Param("groupId") Long groupId);
+    @Query("SELECT n FROM Note n WHERE n.isCompleted = true AND n.group.id = :groupId AND n.parentNote IS NULL AND n.userSub = :userSub")
+    List<Note> findCompletedRootNotesByGroupAndUserSub(@Param("groupId") Long groupId, @Param("userSub") String userSub);
 
 
 

@@ -51,4 +51,13 @@ html {
     --lumo-primary-color-50pct: rgba(21, 101, 192, 0.5);
 }
 
+.login-view a {
+    font-size: 18px;
+    color: blue;
+}
+
+.login-view a:hover {
+    text-decoration: underline;
+}
+
 

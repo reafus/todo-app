@@ -7,6 +7,7 @@ import deeper.into.you.todo_app.notes.repositories.NoteRepository;
 import deeper.into.you.todo_app.notes.repositories.NotesGroupRepository;
 import deeper.into.you.todo_app.notes.util.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,16 +28,24 @@ public class NoteService {
     }
 
     public List<Note> findAll() {
-        return noteRepository.findAll();
+        String userSub = SecurityUtils.getCurrentUserId();
+        return noteRepository.findAllByUserSub(userSub);
     }
 
     public Note findById(Long id) {
-        return noteRepository.findById(id)
+        Note note = noteRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Note not found"));
+        String userSub = SecurityUtils.getCurrentUserId();
+        if (!note.getUserSub().equals(userSub)) {
+            throw new AccessDeniedException("You do not have permission to access this note.");
+        }
+        return note;
     }
 
     @Transactional
     public Note save(Note note) {
+        String userSub = SecurityUtils.getCurrentUserId();
+        note.setUserSub(userSub);
         return noteRepository.save(note);
     }
 
@@ -54,24 +63,29 @@ public class NoteService {
     }
 
     public List<Note> getRootNotesByGroup(Long groupId) {
-        return noteRepository.findByGroupIdAndParentNoteIsNull(groupId);
+        String userSub = SecurityUtils.getCurrentUserId();
+        return noteRepository.findByGroupIdAndParentNoteIsNullAndUserSub(groupId, userSub);
     }
 
     public List<Note> getSubNotes(Long parentNoteId) {
-        return noteRepository.findByParentNoteId(parentNoteId);
+        String userSub = SecurityUtils.getCurrentUserId();
+        return noteRepository.findByParentNoteIdAndUserSub(parentNoteId, userSub);
     }
 
     public NotesGroup getGroupById(Long groupId) {
-        return notesGroupRepository.findById(groupId)
+        String userSub = SecurityUtils.getCurrentUserId();
+        return notesGroupRepository.findByIdAndUserSub(groupId, userSub)
                 .orElseThrow(() -> new EntityNotFoundException("Group not found"));
     }
 
     public List<Note> getActiveRootNotesByGroup(Long groupId) {
-        return noteRepository.findByGroupIdAndParentNoteIsNullAndIsCompletedFalse(groupId);
+        String userSub = SecurityUtils.getCurrentUserId();
+        return noteRepository.findByGroupIdAndParentNoteIsNullAndIsCompletedFalseAndUserSub(groupId, userSub);
     }
 
     public List<Note> getCompletedRootNotesByGroup(Long groupId) {
-        return noteRepository.findCompletedRootNotesByGroup(groupId);
+        String userSub = SecurityUtils.getCurrentUserId();
+        return noteRepository.findCompletedRootNotesByGroupAndUserSub(groupId, userSub);
     }
 
     @Transactional
@@ -83,21 +97,27 @@ public class NoteService {
     }
 
     private void updateChildrenCompletionStatus(Note parent, boolean isCompleted) {
+        String userSub = SecurityUtils.getCurrentUserId();
         for (Note child : parent.getSubNotes()) {
+            if (!child.getUserSub().equals(userSub)) {
+                continue; // Пропускаем чужие заметки
+            }
             child.setCompleted(isCompleted);
             noteRepository.save(child);
             updateChildrenCompletionStatus(child, isCompleted);
         }
     }
     public List<NoteDTO> getCompletedRootNotesByGroupAsDTO(Long groupId) {
-        List<Note> completedNotes = noteRepository.findCompletedRootNotesByGroup(groupId);
+        String userSub = SecurityUtils.getCurrentUserId();
+        List<Note> completedNotes = noteRepository.findCompletedRootNotesByGroupAndUserSub(groupId, userSub);
         return completedNotes.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
     public List<Note> findAllWithTodoDate() {
-        return noteRepository.findByTodoDateIsNotNull();
+        String userSub = SecurityUtils.getCurrentUserId();
+        return noteRepository.findByTodoDateIsNotNullAndUserSub(userSub);
     }
 
     private NoteDTO convertToDTO(Note note) {
@@ -105,6 +125,7 @@ public class NoteService {
         dto.setId(note.getId());
         dto.setTitle(note.getTitle());
         dto.setSubNotes(note.getSubNotes().stream()
+                .filter(subNote -> subNote.getUserSub().equals(SecurityUtils.getCurrentUserId())) // Фильтруем подзаметки по userSub
                 .map(this::convertToDTO)
                 .collect(Collectors.toList()));
         return dto;

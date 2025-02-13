@@ -10,18 +10,17 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.shared.Tooltip;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteParameters;
+import com.vaadin.flow.router.*;
 import deeper.into.you.todo_app.notes.entity.NotesGroup;
 import deeper.into.you.todo_app.notes.services.NotesGroupService;
+import deeper.into.you.todo_app.notes.services.SecurityUtils;
 import deeper.into.you.todo_app.views.MainLayout;
 
 import java.util.Collections;
 
 @Route(value = "", layout = MainLayout.class)
 @PageTitle("Группы Заметок")
-public class MainView extends VerticalLayout {
+public class MainView extends VerticalLayout implements BeforeEnterObserver {
 
     private final NotesGroupService groupService;
     private final Grid<NotesGroup> grid = new Grid<>(NotesGroup.class);
@@ -91,5 +90,12 @@ public class MainView extends VerticalLayout {
 
     private void refreshGrid() {
         grid.setItems(groupService.findAll());
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        if (!SecurityUtils.isUserLoggedIn()) {
+            beforeEnterEvent.rerouteTo(LoginView.class);
+        }
     }
 }

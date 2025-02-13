@@ -21,6 +21,9 @@ public class NotesGroup extends BaseAuditingEntity {
     @BatchSize(size = 20)
     private List<Note> notes = new ArrayList<>();
 
+    @Column(name = "user_sub")
+    private String userSub;
+
     public Long getId() {
         return id;
     }
@@ -43,5 +46,13 @@ public class NotesGroup extends BaseAuditingEntity {
 
     public void setNotes(List<Note> notes) {
         this.notes = notes;
+    }
+
+    public String getUserSub() {
+        return userSub;
+    }
+
+    public void setUserSub(String userSub) {
+        this.userSub = userSub;
     }
 }

@@ -20,6 +20,7 @@ import deeper.into.you.todo_app.views.calendar.CalendarView;
 import deeper.into.you.todo_app.views.notes.MainView;
 
 
+
 public class MainLayout extends AppLayout {
 
     private H2 viewTitle;
@@ -40,8 +41,11 @@ public class MainLayout extends AppLayout {
         toggle.setTooltipText("Menu toggle");
 
         toggle.addClickListener(e -> {
-            UI.getCurrent().getPage().executeJs(
-                    "setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 300)");
+            UI ui = UI.getCurrent();
+            if (ui != null) {
+                ui.getPage().executeJs(
+                        "setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 300)");
+            }
         });
         viewTitle = new H2();
         viewTitle.addClassName("view-title");
@@ -53,8 +57,14 @@ public class MainLayout extends AppLayout {
         themeToggle.setTooltipText("Сменить тему");
         themeToggle.getElement().getStyle().set("transition", "all 0.3s ease");
 
+        Button logoutButton = new Button("Выход", VaadinIcon.SIGN_OUT.create(), e -> {
+            UI.getCurrent().getPage().setLocation("/logout");
+        });
+        logoutButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        logoutButton.setTooltipText("Выйти из системы");
 
-        var header = new HorizontalLayout(toggle, viewTitle, themeToggle);
+
+        var header = new HorizontalLayout(toggle, viewTitle, themeToggle, logoutButton);
         header.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.Display.FLEX,
                 LumoUtility.Padding.End.MEDIUM, LumoUtility.Width.FULL);
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
@@ -72,41 +82,47 @@ public class MainLayout extends AppLayout {
         };
         applyTheme(currentTheme);
 
-        UI.getCurrent().getPage().executeJs(
-                "localStorage.setItem('vaadinTheme', $0)",
-                currentTheme.name().toLowerCase()
-        );
+        UI ui = UI.getCurrent();
+        if (ui != null) {
+            ui.getPage().executeJs(
+                    "localStorage.setItem('vaadinTheme', $0)",
+                    currentTheme.name().toLowerCase()
+            );
+        }
     }
 
     private void applyTheme(Theme theme) {
         UI ui = UI.getCurrent();
-        ui.getPage().executeJs("document.documentElement.setAttribute('theme', $0)", theme.name().toLowerCase());
+        if (ui != null) {
+            ui.getPage().executeJs("document.documentElement.setAttribute('theme', $0)", theme.name().toLowerCase());
 
-        switch(theme) {
-            case DARK -> {
-                themeToggle.setIcon(VaadinIcon.MOON.create());
-                themeToggle.setTooltipText("Светлая тема");
-            }
-            case CUSTOM -> {
-                themeToggle.setIcon(VaadinIcon.PAINTBRUSH.create());
-                themeToggle.setTooltipText("Тёмно-серая тема");
-            }
-            default -> {
-                themeToggle.setIcon(VaadinIcon.SUN_O.create());
-                themeToggle.setTooltipText("Тёмная тема");
+            switch (theme) {
+                case DARK -> {
+                    themeToggle.setIcon(VaadinIcon.MOON.create());
+                    themeToggle.setTooltipText("Светлая тема");
+                }
+                case CUSTOM -> {
+                    themeToggle.setIcon(VaadinIcon.PAINTBRUSH.create());
+                    themeToggle.setTooltipText("Тёмно-серая тема");
+                }
+                default -> {
+                    themeToggle.setIcon(VaadinIcon.SUN_O.create());
+                    themeToggle.setTooltipText("Тёмная тема");
+                }
             }
         }
     }
 
-    private void addDrawerContent() {
-        var appName = new Span("Заметки");
-        appName.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.Display.FLEX,
-                LumoUtility.FontSize.LARGE, LumoUtility.FontWeight.SEMIBOLD,
-                LumoUtility.Height.XLARGE, LumoUtility.Padding.Horizontal.MEDIUM);
+    private void addDrawerContent () {
+            var appName = new Span("Заметки");
+            appName.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.Display.FLEX,
+                    LumoUtility.FontSize.LARGE, LumoUtility.FontWeight.SEMIBOLD,
+                    LumoUtility.Height.XLARGE, LumoUtility.Padding.Horizontal.MEDIUM);
 
-        addToDrawer(appName, new Scroller(createSideNav()));
+            addToDrawer(appName, new Scroller(createSideNav()));
     }
-    private SideNav createSideNav() {
+
+    private SideNav createSideNav () {
         SideNav sideNav = new SideNav();
 
         sideNav.addItem(new SideNavItem("Главная", MainView.class,
@@ -117,7 +133,7 @@ public class MainLayout extends AppLayout {
         return sideNav;
     }
 
-    private String getCurrentPageTitle() {
+    private String getCurrentPageTitle () {
         if (getContent() == null) {
             return "";
         } else if (getContent() instanceof HasDynamicTitle titleHolder) {
@@ -128,24 +144,27 @@ public class MainLayout extends AppLayout {
         }
     }
 
-    private void initTheme() {
-        UI.getCurrent().getPage().executeJs(
-                "return localStorage.getItem('vaadinTheme')"
-        ).then(value -> {
-            String storedTheme = value.asString();
-            if(storedTheme != null) {
-                currentTheme = Theme.valueOf(storedTheme.toUpperCase());
-                UI.getCurrent().getPage().executeJs(
-                        "document.documentElement.setAttribute('theme', $0)",
-                        storedTheme
-                );
-                applyTheme(currentTheme);
-            }
-        });
+    private void initTheme () {
+        UI ui = UI.getCurrent();
+        if (ui != null) {
+            ui.getPage().executeJs(
+                    "return localStorage.getItem('vaadinTheme')"
+            ).then(value -> {
+                String storedTheme = value.asString();
+                if (storedTheme != null) {
+                    currentTheme = Theme.valueOf(storedTheme.toUpperCase());
+                    ui.getPage().executeJs(
+                            "document.documentElement.setAttribute('theme', $0)",
+                            storedTheme
+                    );
+                    applyTheme(currentTheme);
+                }
+            });
+        }
     }
 
     @Override
-    protected void afterNavigation() {
+    protected void afterNavigation () {
         super.afterNavigation();
         viewTitle.setText(getCurrentPageTitle());
     }

@@ -42,6 +42,9 @@ public class Note extends BaseAuditingEntity {
     @Column(name = "todo_date")
     private LocalDate todoDate;
 
+    @Column(name = "user_sub")
+    private String userSub;
+
     public String getContent() {
         return content;
     }
@@ -107,5 +110,13 @@ public class Note extends BaseAuditingEntity {
 
     public void setCompleted(boolean completed) {
         isCompleted = completed;
+    }
+
+    public String getUserSub() {
+        return userSub;
+    }
+
+    public void setUserSub(String userSub) {
+        this.userSub = userSub;
     }
 }
