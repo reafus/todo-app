@@ -62,8 +62,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:8080",
-                "http://localhost:9090"
+                "http://192.168.0.151:8080",
+                "http://192.168.0.151:9090"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
@@ -84,7 +84,7 @@ public class SecurityConfig {
     @Bean
     public LogoutSuccessHandler logoutSuccessHandler() {
         return (request, response, authentication) -> {
-            String redirectUrl = "http://localhost:8080/login";
+            String redirectUrl = "http://192.168.0.151:8080/login";
             String keycloakLogoutUrl = issuerUri + "/protocol/openid-connect/logout?post_logout_redirect_uri="
                     + URLEncoder.encode(redirectUrl, StandardCharsets.UTF_8);
 

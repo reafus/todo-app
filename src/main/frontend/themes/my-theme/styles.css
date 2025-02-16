@@ -60,26 +60,51 @@ html {
     text-decoration: underline;
 }
 
-.chat-messages {
-    overflow-y: auto;
-    gap: 0.5rem;
-}
-
 .chat-message {
-    background: var(--lumo-contrast-5pct);
-    border-radius: 0.5rem;
-    padding: 0.5rem 1rem;
+    margin: 8px 0;
+    padding: 12px;
+    border-radius: 12px;
+    max-width: 70%;
 }
 
-.chat-image {
-    border-radius: 0.25rem;
-    margin-top: 0.5rem;
-    border: 1px solid var(--lumo-contrast-10pct);
+.my-message {
+    background-color: #e3f2fd;
+    margin-left: auto;
+}
+
+.other-message {
+    background-color: #f5f5f5;
+    margin-right: auto;
 }
 
 .sender {
     font-weight: 600;
-    color: var(--lumo-primary-text-color);
+    font-size: 0.9em;
+}
+
+.my-sender {
+    color: #1976d2;
+}
+
+.other-sender {
+    color: #388e3c;
+}
+
+.message-time {
+    font-size: 0.75em;
+    color: #757575;
+    align-self: center;
+}
+
+.message-content {
+    margin-top: 4px;
+    font-size: 0.95em;
+}
+
+.chat-image {
+    margin-top: 8px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 

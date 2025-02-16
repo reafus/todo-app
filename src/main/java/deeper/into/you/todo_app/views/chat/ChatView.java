@@ -28,11 +28,14 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 @Route(value = "chat", layout = MainLayout.class)
@@ -70,14 +73,15 @@ public class ChatView extends VerticalLayout {
 
         HorizontalLayout inputLayout = new HorizontalLayout(messageField, sendButton, upload);
         inputLayout.setWidthFull();
-        inputLayout.expand(messageField);
+        inputLayout.setSpacing(true);
 
         messageLayout.setSizeFull();
+        messageLayout.getStyle().set("overflow", "auto");
         messageLayout.setPadding(false);
         messageLayout.addClassName("chat-messages");
 
         add(messageLayout, inputLayout);
-        expand(messageLayout);
+        setFlexGrow(1, messageLayout);
     }
 
     private void sendMessage() {
@@ -137,13 +141,39 @@ public class ChatView extends VerticalLayout {
             Div messageDiv = new Div();
             messageDiv.addClassNames("chat-message");
 
+            String currentUser = SecurityUtils.getCurrentUsername();
+            boolean isCurrentUser = currentUser.equals(message.getSender());
+
+            if(isCurrentUser) {
+                messageDiv.addClassName("my-message");
+            } else {
+                messageDiv.addClassName("other-message");
+            }
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            String time = message.getTimestamp().format(formatter);
+
+            HorizontalLayout header = new HorizontalLayout();
+            header.addClassNames("message-header");
+            header.setSpacing(false);
+            header.setPadding(false);
+
             Span sender = new Span(message.getSender() + ": ");
-            sender.addClassNames("sender");
+            sender.addClassNames("sender", isCurrentUser ? "my-sender" : "other-sender");
+
+            Span timeSpan = new Span(time);
+            timeSpan.addClassNames("message-time");
+
+            header.add(sender, timeSpan);
+            header.setFlexGrow(1, timeSpan);
+            header.setJustifyContentMode(JustifyContentMode.BETWEEN);
 
             Span content = new Span(message.getContent());
-            content.addClassNames("content");
+            content.addClassNames("message-content");
 
-            messageDiv.add(sender, content);
+            VerticalLayout messageContent = new VerticalLayout(header, content);
+            messageContent.setSpacing(false);
+            messageContent.setPadding(false);
 
             if (message.getMediaUrl() != null) {
                 String mediaUrl = "/api/media/" + message.getMediaUrl();
@@ -158,28 +188,29 @@ public class ChatView extends VerticalLayout {
                     messageDiv.add(download);
                 }
             }
-
+            messageDiv.add(messageContent);
             messageLayout.add(messageDiv);
+
         } catch (Exception e) {
             System.err.println("Ошибка при отображении сообщения:");
             e.printStackTrace();
         }
     }
     private void setupPushUpdates() {
+        SecurityContext context = SecurityContextHolder.getContext();
         UI ui = UI.getCurrent();
         broadcasterRegistration = Broadcaster.register(newMessage -> {
             if (ui.isClosing() || !ui.isAttached()) return;
 
             ui.access(() -> {
                 try {
+                    SecurityContextHolder.setContext(context);
                     displayMessage(newMessage);
-                    messageLayout.getChildren().findFirst().ifPresent(component -> {
-                        component.getElement().executeJs("setTimeout(() => {" +
+                    messageLayout.getElement().executeJs("setTimeout(() => {" +
                                 "const msgDiv = document.querySelector('.chat-messages');" +
                                 "msgDiv.scrollTop = msgDiv.scrollHeight;" +
                                 "}, 100);");
-                    });
-                } catch (Exception e) {
+                    } catch (Exception e) {
                     System.err.println("Ошибка при обновлении UI:");
                     e.printStackTrace();
                 }
