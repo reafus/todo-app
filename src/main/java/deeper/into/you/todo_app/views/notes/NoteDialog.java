@@ -16,6 +16,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import deeper.into.you.todo_app.notes.entity.Note;
 import deeper.into.you.todo_app.notes.services.NoteService;
 import deeper.into.you.todo_app.views.notes.util.QuillEditor;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataAccessException;
 
 import java.util.function.Consumer;
 
@@ -86,11 +88,15 @@ public class NoteDialog extends Dialog {
                     service.save(note);
                     saveHandler.accept(note);
                     close();
+                } catch (ConstraintViolationException ex) {
+                    Notification.show("Ошибка валидации: проверьте поля");
+                } catch (DataAccessException ex) {
+                    Notification.show("Ошибка");
                 } catch (Exception ex) {
-                    Notification.show("Ошибка: " + ex.getMessage());
+                    Notification.show("Неизвестная ошибка");
                 }
             }).exceptionally(ex -> {
-                Notification.show("Ошибка: " + ex.getMessage());
+                Notification.show("Ошибка: " + ex.getLocalizedMessage());
                 return null;
             });
         });

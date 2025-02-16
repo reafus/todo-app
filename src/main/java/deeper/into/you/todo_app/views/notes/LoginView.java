@@ -6,7 +6,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
-import deeper.into.you.todo_app.notes.services.SecurityUtils;
+import deeper.into.you.todo_app.notes.security.SecurityUtils;
 
 @Route("login")
 public class LoginView extends VerticalLayout implements BeforeEnterObserver {
@@ -28,7 +28,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         boolean isLoggedIn = SecurityUtils.isUserLoggedIn();
         System.out.println("User logged in: " + isLoggedIn);
         if (isLoggedIn) {
-            beforeEnterEvent.forwardTo("");
+            beforeEnterEvent.forwardTo(MainView.class);
         }
     }
 }

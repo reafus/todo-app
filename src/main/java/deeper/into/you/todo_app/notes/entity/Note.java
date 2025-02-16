@@ -1,6 +1,7 @@
 package deeper.into.you.todo_app.notes.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import org.hibernate.annotations.BatchSize;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
@@ -19,6 +20,7 @@ public class Note extends BaseAuditingEntity {
     private Long id;
 
     @Column(nullable = false, length = 200)
+    @NotBlank(message = "Название должно быть заполнено")
     private String title;
 
     @Column(columnDefinition = "TEXT")

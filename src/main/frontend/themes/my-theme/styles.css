@@ -60,4 +60,26 @@ html {
     text-decoration: underline;
 }
 
+.chat-messages {
+    overflow-y: auto;
+    gap: 0.5rem;
+}
+
+.chat-message {
+    background: var(--lumo-contrast-5pct);
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+}
+
+.chat-image {
+    border-radius: 0.25rem;
+    margin-top: 0.5rem;
+    border: 1px solid var(--lumo-contrast-10pct);
+}
+
+.sender {
+    font-weight: 600;
+    color: var(--lumo-primary-text-color);
+}
+
 

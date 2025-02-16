@@ -13,7 +13,7 @@ import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.router.*;
 import deeper.into.you.todo_app.notes.entity.NotesGroup;
 import deeper.into.you.todo_app.notes.services.NotesGroupService;
-import deeper.into.you.todo_app.notes.services.SecurityUtils;
+import deeper.into.you.todo_app.notes.security.SecurityUtils;
 import deeper.into.you.todo_app.views.MainLayout;
 
 import java.util.Collections;
@@ -54,7 +54,11 @@ public class MainView extends VerticalLayout implements BeforeEnterObserver {
     }
 
     private Button createAddButton() {
-        return new Button("Добавить группу", e -> new GroupDialog(groupService, this::refreshGrid).open());
+        return new Button("Добавить группу", e -> {
+                NotesGroup newGroup = new NotesGroup();
+                new GroupDialog(newGroup, groupService, this::refreshGrid).open();
+        });
+    //todo ху
     }
 
     private HorizontalLayout createActions(NotesGroup group) {

@@ -25,10 +25,26 @@ services:
       - todo-app
     command:
       - "start-dev"
+  mongodb:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: chat_db
+    volumes:
+      - ./mongo-init/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - mongodb_data:/data/db
+    networks:
+      - todo-app
+    restart: unless-stopped
 networks:
   todo-app:
     driver: bridge
 
 volumes:
   postgres:
+    driver: local
+  mongodb_data:
     driver: local

@@ -1,5 +1,6 @@
 package deeper.into.you.todo_app.notes.services;
 
+import deeper.into.you.todo_app.notes.security.SecurityUtils;
 import deeper.into.you.todo_app.notes.entity.NotesGroup;
 import deeper.into.you.todo_app.notes.repositories.NotesGroupRepository;
 import deeper.into.you.todo_app.notes.util.EntityNotFoundException;

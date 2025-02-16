@@ -17,6 +17,7 @@ import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import deeper.into.you.todo_app.views.calendar.CalendarView;
+import deeper.into.you.todo_app.views.chat.ChatView;
 import deeper.into.you.todo_app.views.notes.MainView;
 
 
@@ -129,6 +130,7 @@ public class MainLayout extends AppLayout {
                 VaadinIcon.WORKPLACE.create()));
         sideNav.addItem(new SideNavItem("Календарь", CalendarView.class,
                 VaadinIcon.CALENDAR.create()));
+        sideNav.addItem(new SideNavItem("Чат", ChatView.class, VaadinIcon.COMMENT.create()));
 
         return sideNav;
     }
@@ -148,7 +150,7 @@ public class MainLayout extends AppLayout {
         UI ui = UI.getCurrent();
         if (ui != null) {
             ui.getPage().executeJs(
-                    "return localStorage.getItem('vaadinTheme')"
+                    "return localStorage.getItem('vaadinTheme') || 'light'"
             ).then(value -> {
                 String storedTheme = value.asString();
                 if (storedTheme != null) {

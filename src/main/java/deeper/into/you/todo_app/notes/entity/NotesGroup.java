@@ -1,6 +1,8 @@
 package deeper.into.you.todo_app.notes.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ public class NotesGroup extends BaseAuditingEntity {
     private Long id;
 
     @Column(nullable = false, length = 100)
+    @NotBlank(message = "Название должно быть заполнено")
     private String name;
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
