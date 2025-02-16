@@ -20,7 +20,7 @@ public class ChatService {
         repository.save(message);
     }
 
-    public List<ChatMessage> findTop50ByOrderByTimestampDesc() {
-        return repository.findTop50ByOrderByTimestampDesc();
+    public List<ChatMessage> findTop50ByOrderByTimestampAsc() {
+        return repository.findTop50ByOrderByTimestampAsc();
     }
 }

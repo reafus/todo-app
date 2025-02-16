@@ -1,11 +1,13 @@
 package deeper.into.you.todo_app.chat.entity;
 
 import jakarta.persistence.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
 @Document(collection = "messages")
+@CompoundIndex(name = "timestamp_index", def = "{'timestamp': -1}")
 public class ChatMessage {
     @Id
     private String id;

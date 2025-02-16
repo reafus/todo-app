@@ -1,5 +1,6 @@
 package deeper.into.you.todo_app.views.chat;
 
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
@@ -60,6 +61,7 @@ public class ChatView extends VerticalLayout {
         messageField.setWidthFull();
 
         Button sendButton = new Button("Отправить", VaadinIcon.ARROW_UP.create());
+        sendButton.addClickShortcut(Key.ENTER);
         sendButton.addClickListener(event -> sendMessage());
 
         MemoryBuffer buffer = new MemoryBuffer();
@@ -127,7 +129,7 @@ public class ChatView extends VerticalLayout {
 
     private void loadMessages() {
         messageLayout.removeAll();
-        service.findTop50ByOrderByTimestampDesc().forEach(this::displayMessage);
+        service.findTop50ByOrderByTimestampAsc().forEach(this::displayMessage);
     }
 
     private void displayMessage(ChatMessage message) {
