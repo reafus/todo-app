@@ -10,4 +10,5 @@ public interface ChatMessageRepository extends MongoRepository<ChatMessage,Strin
 
     @Query(value = "{}", sort = "{timestamp: 1}")
     List<ChatMessage> findTop50ByOrderByTimestampAsc();
+
 }

@@ -23,4 +23,5 @@ public class ChatService {
     public List<ChatMessage> findTop50ByOrderByTimestampAsc() {
         return repository.findTop50ByOrderByTimestampAsc();
     }
+
 }

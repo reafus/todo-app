@@ -16,6 +16,15 @@ html[theme~="custom"] {
     --lumo-tint-5pct: rgba(88, 101, 242, 0.05);
 }
 
+html[theme~="custom"] {
+    /* Переопределение переменных чата */
+    --my-message-bg: #40444b;
+    --other-message-bg: #2f3136;
+    --message-text-color: #dcddde;
+    --sender-text-color: #7289da;
+    --timestamp-color: #b9bbbe;
+}
+
 /* Общие стили для фона */
 html[theme~="custom"] {
     background-color: var(--discord-primary);
@@ -219,4 +228,37 @@ html[theme~="custom"] .view-title {
     padding: 0;
     letter-spacing: 1px;
 }
+
+html[theme~="custom"] .chat-message {
+    border: 1px solid var(--discord-border);
+}
+
+html[theme~="custom"] .my-sender {
+    color: #7289da !important;
+}
+
+html[theme~="custom"] .other-sender {
+    color: #57f287 !important;
+}
+
+/* Стили для поля ввода */
+html[theme~="custom"] .chat-view-text-field {
+    background-color: #40444b !important;
+    border: 1px solid var(--discord-border) !important;
+    color: #dcddde !important;
+}
+
+html[theme~="custom"] .chat-view-text-field::part(input-field) {
+    background-color: transparent;
+}
+
+html[theme~="custom"] .upload-button {
+    color: var(--discord-text-primary) !important;
+    background-color: var(--discord-accent) !important;
+}
+
+html[theme~="custom"] .upload-button:hover {
+    background-color: #4752c4 !important;
+}
+
 

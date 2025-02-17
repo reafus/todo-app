@@ -62,6 +62,7 @@ public class ChatView extends VerticalLayout {
         setSizeFull();
         messageField.setPlaceholder("Введите сообщение...");
         messageField.setWidthFull();
+        messageField.addClassName("chat-view-text-field");
 
         Button sendButton = new Button("Отправить", VaadinIcon.ARROW_UP.create());
         sendButton.addClickShortcut(Key.ENTER);

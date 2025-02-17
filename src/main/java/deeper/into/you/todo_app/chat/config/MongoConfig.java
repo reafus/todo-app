@@ -13,4 +13,5 @@ public class MongoConfig {
     public GridFsTemplate gridFsTemplate(MongoDatabaseFactory dbFactory, MongoConverter converter) {
         return new GridFsTemplate(dbFactory, converter);
     }
+
 }

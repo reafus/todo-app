@@ -1,6 +1,18 @@
 @import "custom-theme.css";
 @import "fullcalendar.css";
 
+html[theme~="dark"] {
+    --my-message-bg: var(--lumo-primary-color-10pct);
+    --other-message-bg: var(--lumo-contrast-5pct);
+    --message-text-color: var(--lumo-body-text-color);
+    --sender-text-color: var(--lumo-primary-text-color);
+    --timestamp-color: var(--lumo-secondary-text-color);
+}
+
+html[theme~="dark"] .my-message {
+    border: 1px solid var(--lumo-primary-color-50pct);
+}
+
 ::part(parent-note) {
     font-weight: bold;
     padding-left: 10px;
@@ -65,21 +77,23 @@ html {
     padding: 12px;
     border-radius: 12px;
     max-width: 70%;
+    color: var(--message-text-color);
 }
 
 .my-message {
-    background-color: #e3f2fd;
+    background-color: var(--my-message-bg);
     margin-left: auto;
 }
 
 .other-message {
-    background-color: #f5f5f5;
+    background-color: var(--other-message-bg);
     margin-right: auto;
 }
 
 .sender {
     font-weight: 600;
     font-size: 0.9em;
+    color: var(--sender-text-color);
 }
 
 .my-sender {
@@ -92,7 +106,7 @@ html {
 
 .message-time {
     font-size: 0.75em;
-    color: #757575;
+    color: var(--timestamp-color);
     align-self: center;
 }
 
