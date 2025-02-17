@@ -13,6 +13,18 @@ html[theme~="dark"] .my-message {
     border: 1px solid var(--lumo-primary-color-50pct);
 }
 
+html[theme~="light"] {
+    --my-message-bg: #F7F7F7;
+    --other-message-bg: #C9E4CA;
+    --message-text-color: #333333;
+    --sender-text-color: #00698f;
+    --timestamp-color: #666666;
+}
+
+html[theme~="light"] .my-message {
+    border: 1px solid #AAAAAA;
+}
+
 ::part(parent-note) {
     font-weight: bold;
     padding-left: 10px;
@@ -113,6 +125,7 @@ html {
 .message-content {
     margin-top: 4px;
     font-size: 0.95em;
+    word-break: break-all;
 }
 
 .chat-image {
