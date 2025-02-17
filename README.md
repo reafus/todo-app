@@ -19,6 +19,15 @@ docker-compose up -d
 npm install @fullcalendar/core @fullcalendar/daygrid
 ```
 #
+![image](https://github.com/user-attachments/assets/9a525ba2-01b7-4cf0-9185-7ab68034d271)
+
+![image](https://github.com/user-attachments/assets/d0e93966-f4a9-4007-bc67-8dc8f7dd08f3)
+
+![image](https://github.com/user-attachments/assets/f64a044c-0812-415a-b022-b6f8a4ba4f9c)
+
+![image](https://github.com/user-attachments/assets/7264302a-82fa-422e-b6fc-96aa9ceae6be)
+
+
 #
 #
 # [vaadin docs](https://vaadin.com/docs/latest/)  
