@@ -1,6 +1,5 @@
 # Todo app (Spring Boot + Vaadin flow)
 ## postgreSQL, Flywaydb
-<img height="64" src="img_2.png">
 
 ### Функциональность
 1. Редактирование текста: Поддержка форматирования через QuillEditor.
@@ -26,5 +25,5 @@ npm install @fullcalendar/core @fullcalendar/daygrid
 
 # [fullcalendar.io](https://fullcalendar.io/docs/getting-started)
 
-![img_3.png](img_3.png)
+
 
