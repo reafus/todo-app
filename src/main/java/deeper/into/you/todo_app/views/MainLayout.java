@@ -8,6 +8,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
@@ -16,6 +17,7 @@ import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import deeper.into.you.todo_app.notes.security.SecurityUtils;
 import deeper.into.you.todo_app.views.calendar.CalendarView;
 import deeper.into.you.todo_app.views.chat.ChatView;
 import deeper.into.you.todo_app.views.notes.MainView;
@@ -58,14 +60,19 @@ public class MainLayout extends AppLayout {
         themeToggle.setTooltipText("Сменить тему");
         themeToggle.getElement().getStyle().set("transition", "all 0.3s ease");
 
-        Button logoutButton = new Button("Выход", VaadinIcon.SIGN_OUT.create(), e -> {
+        Button logoutButton = new Button(VaadinIcon.SIGN_OUT.create(), e -> {
             UI.getCurrent().getPage().setLocation("/logout");
         });
         logoutButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         logoutButton.setTooltipText("Выйти из системы");
 
 
-        var header = new HorizontalLayout(toggle, viewTitle, themeToggle, logoutButton);
+        Button userProfileButton = new Button(VaadinIcon.USER.create(), e -> goToProfile());
+        userProfileButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        userProfileButton.setTooltipText("Перейти к профилю пользователя");
+
+
+        var header = new HorizontalLayout(toggle, viewTitle, themeToggle, userProfileButton, logoutButton);
         header.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.Display.FLEX,
                 LumoUtility.Padding.End.MEDIUM, LumoUtility.Width.FULL);
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
@@ -100,15 +107,15 @@ public class MainLayout extends AppLayout {
             switch (theme) {
                 case DARK -> {
                     themeToggle.setIcon(VaadinIcon.MOON.create());
-                    themeToggle.setTooltipText("Светлая тема");
+                    themeToggle.setTooltipText("Темная тема");
                 }
                 case CUSTOM -> {
                     themeToggle.setIcon(VaadinIcon.PAINTBRUSH.create());
-                    themeToggle.setTooltipText("Тёмно-серая тема");
+                    themeToggle.setTooltipText("Темно-серая тема");
                 }
                 default -> {
                     themeToggle.setIcon(VaadinIcon.SUN_O.create());
-                    themeToggle.setTooltipText("Тёмная тема");
+                    themeToggle.setTooltipText("Светлая тема");
                 }
             }
         }
@@ -162,6 +169,16 @@ public class MainLayout extends AppLayout {
                     applyTheme(currentTheme);
                 }
             });
+        }
+    }
+
+    private void goToProfile() {
+        String userId = SecurityUtils.getCurrentUserId();
+        if (userId != null) {
+            String keycloakUrl = "http://192.168.0.151:9090/realms/todo-app/account";
+            UI.getCurrent().getPage().setLocation(keycloakUrl);
+        } else {
+            Notification.show("Пользователь не авторизован", 3000, Notification.Position.MIDDLE);
         }
     }
 

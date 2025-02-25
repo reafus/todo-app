@@ -49,6 +49,20 @@ public class SecurityUtils {
         return null;
     }
 
+    public static String getCurrentUserEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof Jwt jwt) {
+            return jwt.getClaim("email");
+        } else if (principal instanceof OidcUser oidcUser) {
+            return oidcUser.getEmail();
+        }
+        return null;
+    }
+
     public static boolean isUserLoggedIn() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth != null

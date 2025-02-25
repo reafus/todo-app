@@ -73,16 +73,13 @@ public class NoteDialog extends Dialog {
             contentField.getValue().thenAccept(content -> {
                 note.setContent(content);
 
-
-                if (parentCombo.getValue() != null) {
-                    note.setParentNote(parentCombo.getValue());
-                }
-
-
                 if (groupId != null && note.getGroup() == null) {
                     note.setGroup(service.getGroupById(groupId));
                 }
 
+                if (parentCombo.getValue() != null) {
+                    note.setParentNote(parentCombo.getValue());
+                }
 
                 try {
                     service.save(note);

@@ -1,5 +1,6 @@
 package deeper.into.you.todo_app.notes.services;
 
+import deeper.into.you.todo_app.notes.notifications.NoteEvent;
 import deeper.into.you.todo_app.notes.security.SecurityUtils;
 import deeper.into.you.todo_app.notes.dto.NoteDTO;
 import deeper.into.you.todo_app.notes.entity.Note;
@@ -7,7 +8,11 @@ import deeper.into.you.todo_app.notes.entity.NotesGroup;
 import deeper.into.you.todo_app.notes.repositories.NoteRepository;
 import deeper.into.you.todo_app.notes.repositories.NotesGroupRepository;
 import deeper.into.you.todo_app.notes.util.EntityNotFoundException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,11 +26,17 @@ public class NoteService {
 
     private final NoteRepository noteRepository;
     private final NotesGroupRepository notesGroupRepository;
+    private final KafkaTemplate<String, NoteEvent> kafkaTemplate;
+    private final String topicName;
 
     @Autowired
-    public NoteService(NoteRepository noteRepository, NotesGroupRepository notesGroupRepository) {
+    public NoteService(NoteRepository noteRepository, NotesGroupRepository notesGroupRepository,
+                       KafkaTemplate<String, NoteEvent> kafkaTemplate,
+                       @Value("${spring.kafka.topic.name}") String topicName) {
         this.noteRepository = noteRepository;
         this.notesGroupRepository = notesGroupRepository;
+        this.kafkaTemplate = kafkaTemplate;
+        this.topicName = topicName;
     }
 
     public List<Note> findAll() {
@@ -47,12 +58,20 @@ public class NoteService {
     public Note save(Note note) {
         String userSub = SecurityUtils.getCurrentUserId();
         note.setUserSub(userSub);
-        return noteRepository.save(note);
+        boolean isNew = note.getId() == null;
+        Note savedNote = noteRepository.save(note);
+
+        if (note.getTodoDate() != null) {
+            String eventType = isNew ? "CREATED" : "UPDATED";
+            sendNoteEvent(savedNote, eventType);
+        }
+        return savedNote;
     }
 
     @Transactional
     public void delete(Long id) {
         Note note = findById(id);
+        sendNoteEvent(note, "DELETED");
         noteRepository.delete(note);
     }
 
@@ -60,7 +79,21 @@ public class NoteService {
     public Note updateCompletionStatus(Long id, boolean isCompleted) {
         Note note = findById(id);
         note.setCompleted(isCompleted);
-        return noteRepository.save(note);
+        Note updatedNote = noteRepository.save(note);
+
+        return updatedNote;
+    }
+
+    private void sendNoteEvent(Note note, String eventType) {
+        NoteEvent event = new NoteEvent();
+        event.setNoteId(note.getId());
+        event.setUserSub(note.getUserSub());
+        event.setNoteTitle(note.getTitle());
+        event.setNoteContent(note.getContent());
+        event.setTodoDate(note.getTodoDate());
+        event.setEventType(eventType);
+        event.setUserEmail(SecurityUtils.getCurrentUserEmail());
+        kafkaTemplate.send(topicName, event);
     }
 
     public List<Note> getRootNotesByGroup(Long groupId) {

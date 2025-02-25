@@ -150,7 +150,6 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
     private Component createAddButton() {
         return new Button("Добавить заметку", e -> {
             NoteDialog dialog = new NoteDialog(groupId, noteService, newNote -> {
-                noteService.save(newNote);
                 refreshGrid();
             });
             dialog.open();
@@ -159,8 +158,7 @@ public class NotesView extends VerticalLayout implements BeforeEnterObserver {
 
     private HorizontalLayout createNoteActions(Note note) {
         Button edit = new Button(new Icon(VaadinIcon.EDIT), e -> {
-            NoteDialog dialog = new NoteDialog(note, noteService, updatedNote -> {
-                noteService.save(updatedNote);
+            NoteDialog dialog = new NoteDialog(note, noteService, newNote -> {
                 refreshGrid();
             });
             dialog.open();
